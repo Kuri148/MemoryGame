@@ -18,6 +18,7 @@ public class CardPlacement : UdonSharpBehaviour
     public GameObject startButton;
     public GameObject startPageInstructions;
     public TextMeshProUGUI topicChoice;
+    public GameObject topicChoiceGameObject;
     public GameObject[] playerButtons = new GameObject[4];
     public GameObject[] cardTopics = new GameObject[12];
     public GameObject[] playerText = new GameObject[4];
@@ -30,7 +31,8 @@ public class CardPlacement : UdonSharpBehaviour
     public GameObject cardBox;
     int cardIndex = 0;
     public string[] vocabSet;
-
+    public string faceParts; //= "face, 顔\nかお, ears, 耳\nみみ, nose, 鼻\nはな, hair, 髪\nかみ, mouth, 口\nくち, cheeks, 頬\nほほ, eyes, 目\nめ, eyebrows, 眉毛\nまゆげ";
+    public string rawVocab;
     public Vector3 noVectorYet;
     public GameObject placeKeeper;
     public GameObject[] selectedCards = new GameObject[2];
@@ -55,10 +57,8 @@ public class CardPlacement : UdonSharpBehaviour
         noVectorYet = new Vector3(-13f,0f,0f);
         synchronizationSwitch = "playerAdded";
         GatherBoardArrays();
-        TurnOnMenuBoard();
-        BuildInitialDeck();
-        BuildInitialTransforms();
-        ResetSelectedCards();
+        TurnOnMenuBoard(true, false);
+
         //BuildVocabArray();
         //PutVocabularyOntoCards();
         //RandomizeTransforms();
@@ -68,27 +68,30 @@ public class CardPlacement : UdonSharpBehaviour
         //Initializations
         nextButton.SetActive(false);
     }
-    public void TurnOnMenuBoard()
+    public void StartButtonPressed()
+    {
+        TurnOnMenuBoard(false, false);
+        BuildInitialDeck();
+        BuildInitialTransforms();
+        ResetSelectedCards();
+    }
+    public void TurnOnMenuBoard(bool onAndOff, bool justTheStartButton)
     {
         foreach (GameObject button in playerButtons)
         {
-            button.SetActive(true);
+            button.SetActive(onAndOff);
         }
         foreach (GameObject topic in cardTopics)
         {
             int j = 0;
             Debug.Log($"Passing through {j}"); 
-            topic.SetActive(true);
+            topic.SetActive(onAndOff);
             j++;
         }
-        foreach (GameObject text in playerText)
-        {
-            text.SetActive(true);
-        }
-        startButton.SetActive(true);
-        startPageInstructions.SetActive(true);
-        startButton.SetActive(false);
-        shuffleButton.SetActive(true);
+        topicChoiceGameObject.SetActive(onAndOff);
+        startButton.SetActive(justTheStartButton);
+        startPageInstructions.SetActive(onAndOff);
+        shuffleButton.SetActive(!onAndOff);
     }
     private void GatherBoardArrays()
     {
@@ -109,6 +112,10 @@ public class CardPlacement : UdonSharpBehaviour
         {
             playerIds[i] = -1;
                 playerDisplayNames[i] = "nobody";
+        }
+        foreach (GameObject text in playerText)
+        {
+            text.SetActive(true);
         }
     }
     //Set to other script
@@ -173,9 +180,16 @@ public class CardPlacement : UdonSharpBehaviour
             
     }
     
-    public void BuildVocabArray()
+    public void BuildVocabArray(string deckName)
     {
-        vocabSet = PlayersTurnsTopic.setToUse.Split(',');
+        switch (deckName)
+        {
+        case "Face Parts":
+            rawVocab = "face, 顔\nかお, ears, 耳\nみみ, nose, 鼻\nはな, hair, 髪\nかみ, mouth, 口\nくち, cheeks, 頬\nほほ, eyes, 目\nめ, eyebrows, 眉毛\nまゆげ";
+            break;
+        }
+    
+        vocabSet = rawVocab.Split(',');
 
         foreach (string vocab in vocabSet)
         {
@@ -190,6 +204,7 @@ public class CardPlacement : UdonSharpBehaviour
             GameObject button = cardBox.transform.GetChild(i).gameObject;
             GameObject textField = button.transform.GetChild(0).gameObject;
             Debug.Log(textField==null);
+            Debug.Log(vocabSet[i]);
             textField.GetComponent<TextMeshProUGUI>().text = vocabSet[i];
             textField.SetActive(false);
         }
@@ -270,7 +285,7 @@ public class CardPlacement : UdonSharpBehaviour
     public void Reshuffle()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        BuildVocabArray();
+        //BuildVocabArray();
         PutVocabularyOntoCards();
         RandomizeTransforms();
         PlaceCardsOnTransforms();
@@ -459,7 +474,7 @@ public class CardPlacement : UdonSharpBehaviour
         switch (synchronizationSwitch)
         {
         case "setBoard":
-            BuildVocabArray();
+            //BuildVocabArray();
             PutVocabularyOntoCards();
             PlaceCardsOnTransforms();
             shuffleButton.SetActive(false);

@@ -569,7 +569,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &77911610
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1622,7 +1622,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &254816321
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2082,7 +2082,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &423099584
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2881,7 +2881,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &684511871
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3994,7 +3994,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 824422954}
-  CardPlacement: {fileID: 0}
+  CardPlacement: {fileID: 1095297442}
   PlayerTextEmpty: {fileID: 16256325}
   PlayerJoinButtonsEmpty: {fileID: 824422952}
   CardTopicEmpty: {fileID: 2086391184}
@@ -4054,6 +4054,7 @@ MonoBehaviour:
   - 
   setToUse: 
   deckName: 
+  playerCount: 0
 --- !u!1 &831966995
 GameObject:
   m_ObjectHideFlags: 0
@@ -4278,7 +4279,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: NextPlayer
+          m_StringArgument: StartButtonPressed
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &875706866
@@ -5749,13 +5750,14 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 1095297441}
-  PlayersTurnsTopic: {fileID: 0}
+  PlayersTurnsTopic: {fileID: 824422955}
   PlayerTextEmpty: {fileID: 16256325}
   PlayerJoinButtonsEmpty: {fileID: 824422952}
   CardTopicEmpty: {fileID: 2086391184}
   startButton: {fileID: 875706863}
   startPageInstructions: {fileID: 946118238}
   topicChoice: {fileID: 1075691225}
+  topicChoiceGameObject: {fileID: 1075691223}
   playerButtons:
   - {fileID: 0}
   - {fileID: 0}
@@ -5800,6 +5802,10 @@ MonoBehaviour:
   - {fileID: 0}
   cardBox: {fileID: 1095297439}
   vocabSet: []
+  faceParts: "face, \u9854\n\u304B\u304A, ears, \u8033\n\u307F\u307F, nose, \u9F3B\n\u306F\u306A,
+    hair, \u9AEA\n\u304B\u307F, mouth, \u53E3\n\u304F\u3061, cheeks, \u982C\n\u307B\u307B,
+    eyes, \u76EE\n\u3081, eyebrows, \u7709\u6BDB\n\u307E\u3086\u3052"
+  rawVocab: 
   noVectorYet: {x: 0, y: 0, z: 0}
   placeKeeper: {fileID: 0}
   selectedCards:
@@ -6678,7 +6684,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1367057514
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6808,7 +6814,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1374957012
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7068,7 +7074,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1427289515
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7718,7 +7724,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1474819407
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8108,7 +8114,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1533796167
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8238,7 +8244,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1598409553
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8368,7 +8374,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1601812783
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9836,7 +9842,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1929872284
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10364,7 +10370,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1996811070
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10494,7 +10500,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2007954119
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10805,7 +10811,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2107371163
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11065,7 +11071,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2144054114
 RectTransform:
   m_ObjectHideFlags: 0

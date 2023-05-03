@@ -49,6 +49,7 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
     [UdonSynced] public string[] playerDisplayNames = new string[4];
     [UdonSynced] public string setToUse;
     [UdonSynced] public string deckName;
+    [UdonSynced] public int playerCount;
 
     void Start()
     {
@@ -86,6 +87,7 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
     }
     public void SelectPlayerNumber(int playerNumber)
     {
+        playerCount++;
         debugLog.text = Networking.GetOwner(PlayerJoinButtonsEmpty).playerId.ToString();
         playerDisplayNames[playerNumber - 1] = Networking.LocalPlayer.displayName;
         playerIds[playerNumber - 1] = Networking.LocalPlayer.playerId;
@@ -117,7 +119,7 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
     public void SelectTopic(string topicName, string deckContents)
     {
         deckName = topicName;
-        setToUse = topicName;
+        setToUse = deckContents;
         RequestSerialization();
         UpdateCurrentTopic();
     }
@@ -125,6 +127,11 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
     public void UpdateCurrentTopic()
     {
         topicChoice.text = deckName;
+        if (setToUse != null && playerCount > 0)
+        {
+            startButton.SetActive(true);
+        }
+        CardPlacement.BuildVocabArray(deckName);
     }
 
     public override void OnDeserialization()
