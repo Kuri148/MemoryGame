@@ -24,7 +24,6 @@ public class CardPlacement : UdonSharpBehaviour
     public GameObject[] playerText = new GameObject[4];
     
     //Gameplay
-    public GameObject shuffleButton;
     public TextMeshProUGUI debugLog;
     public GameObject[] cardDeck = new GameObject[16];
     Vector3[] cardTransforms = new Vector3[16];
@@ -51,49 +50,17 @@ public class CardPlacement : UdonSharpBehaviour
     [UdonSynced] public string[] playerDisplayNames = new string[4];
 
     
-    
+    //-----------------------------------------------------------------------------------------
     void Start()
     {
-        noVectorYet = new Vector3(-13f,0f,0f);
-        synchronizationSwitch = "playerAdded";
-        GatherBoardArrays();
-        TurnOnMenuBoard(true, false);
-
-        //BuildVocabArray();
-        //PutVocabularyOntoCards();
-        //RandomizeTransforms();
-        //PlaceCardsOnTransforms();
-        //ClearTable();
-
-        //Initializations
         nextButton.SetActive(false);
-    }
-    public void StartButtonPressed()
-    {
-        TurnOnMenuBoard(false, false);
+        noVectorYet = new Vector3(-13f,0f,0f);
+        GatherBoardArrays();
         BuildInitialDeck();
         BuildInitialTransforms();
-        ResetSelectedCards();
+        TurnOnMenuBoard(true, false);
     }
-    public void TurnOnMenuBoard(bool onAndOff, bool justTheStartButton)
-    {
-        foreach (GameObject button in playerButtons)
-        {
-            button.SetActive(onAndOff);
-        }
-        foreach (GameObject topic in cardTopics)
-        {
-            int j = 0;
-            Debug.Log($"Passing through {j}"); 
-            topic.SetActive(onAndOff);
-            j++;
-        }
-        topicChoiceGameObject.SetActive(onAndOff);
-        startButton.SetActive(justTheStartButton);
-        startPageInstructions.SetActive(onAndOff);
-        shuffleButton.SetActive(!onAndOff);
-    }
-    private void GatherBoardArrays()
+    public void GatherBoardArrays()
     {
         for (int i = 0; i < playerButtons.Length; i++)
         {
@@ -107,46 +74,9 @@ public class CardPlacement : UdonSharpBehaviour
         {
             GameObject topic = CardTopicEmpty.transform.GetChild(j).gameObject;
             cardTopics[j] = topic;
+            GameObject textField = topic.transform.GetChild(0).gameObject;
+            textField.GetComponent<TextMeshProUGUI>().text = topic.name;
         }
-        for (int i = 0; i < 4; i++)
-        {
-            playerIds[i] = -1;
-                playerDisplayNames[i] = "nobody";
-        }
-        foreach (GameObject text in playerText)
-        {
-            text.SetActive(true);
-        }
-    }
-    //Set to other script
-    public void SelectPlayerNumber(int playerNumber)
-    {
-        debugLog.text = Networking.GetOwner(cardBox).playerId.ToString();
-        playerDisplayNames[playerNumber - 1] = Networking.LocalPlayer.displayName;
-        playerIds[playerNumber - 1] = Networking.LocalPlayer.playerId;
-        CurrentPlayers();
-        foreach (GameObject button in playerButtons)
-        {
-            button.SetActive(false);
-        }
-        synchronizationSwitch = "playerAdded";
-        RequestSerialization();
-    }
-    
-    public void CurrentPlayers()
-    {
-        string printOut = ""; 
-        for (int i = 0; i < 4; i++)
-        {
-            if (playerIds[i] != -1)
-            {
-                playerButtons[i].SetActive(false);
-                playerText[i].GetComponent<TextMeshProUGUI>().text = playerDisplayNames[i];
-            }
-        printOut = printOut + " " + playerDisplayNames[i];
-        }
-        Debug.Log(printOut);
-        //debugLog.text = "Everything all right here?";
     }
     private void BuildInitialDeck()
     {
@@ -176,19 +106,45 @@ public class CardPlacement : UdonSharpBehaviour
                 x = -8;
                 y -= 2;
             }
-        }
-            
+        } 
     }
-    
-    public void BuildVocabArray(string deckName)
+
+    public void TurnOnMenuBoard(bool onAndOff, bool justTheStartButton)
     {
-        switch (deckName)
+        foreach (GameObject button in playerButtons)
         {
-        case "Face Parts":
-            rawVocab = "face, 顔\nかお, ears, 耳\nみみ, nose, 鼻\nはな, hair, 髪\nかみ, mouth, 口\nくち, cheeks, 頬\nほほ, eyes, 目\nめ, eyebrows, 眉毛\nまゆげ";
-            break;
+            button.SetActive(onAndOff);
         }
+        foreach (GameObject topic in cardTopics)
+        {
+            int j = 0;
+            Debug.Log($"Passing through {j}"); 
+            topic.SetActive(onAndOff);
+            j++;
+        }
+        topicChoiceGameObject.SetActive(onAndOff);
+        startButton.SetActive(justTheStartButton);
+        startPageInstructions.SetActive(onAndOff);
+    }
+    //--------------------------------------------------------------------------------------
+
+        public void StartButtonPressed()
+    {
+        TurnOnMenuBoard(false, false);
+        Networking.SetOwner(Networking.LocalPlayer, gameObject);
+        ResetSelectedCards();
+        RandomizeTransforms();
+        SetFoundAndNotFoundCards();
+        synchronizationSwitch = "setBoard";
+        RequestSerialization();
+        PutVocabularyOntoCards();
+        PlaceCardsOnTransforms();
+    }
+
     
+    public void BuildVocabArray()
+    {   
+        rawVocab = PlayersTurnsTopic.setToUse;
         vocabSet = rawVocab.Split(',');
 
         foreach (string vocab in vocabSet)
@@ -254,8 +210,7 @@ public class CardPlacement : UdonSharpBehaviour
                 }        
             }
         }
-        synchronizationSwitch = "setBoard";
-        RequestSerialization();
+
         Debug.Log($"The length of shuffledTransforms 2nd time is {shuffledTransforms.Length}");
         for (int i = 0; i < shuffledTransforms.Length; i++)
         {
@@ -282,22 +237,14 @@ public class CardPlacement : UdonSharpBehaviour
             notFoundCards[i] = i;
         }
     }
-    public void Reshuffle()
-    {
-        Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        //BuildVocabArray();
-        PutVocabularyOntoCards();
-        RandomizeTransforms();
-        PlaceCardsOnTransforms();
-        SetFoundAndNotFoundCards();
-        shuffleButton.SetActive(false);
-    }
 
     public void ResetSelectedCards()
     {
         for (int i = 0; i < selectedCardValues.Length; i++)
         {
-            selectedCardValues[i] = -1;
+            int uniqueLows = -1;
+            selectedCardValues[i] = uniqueLows;
+            uniqueLows--;
         }
     }
 
@@ -305,7 +252,7 @@ public class CardPlacement : UdonSharpBehaviour
     {
         for (int i = 0; i < selectedCards.Length; i++)
         {
-            if (selectedCardValues[i] == -1)
+            if (selectedCardValues[i] < 0 && selectedCardValues[0] != card)
             {
                 selectedCardValues[i] = card;
                 RevealSelectedCard(card);
@@ -474,10 +421,11 @@ public class CardPlacement : UdonSharpBehaviour
         switch (synchronizationSwitch)
         {
         case "setBoard":
+            TurnOnMenuBoard(false, false);
+            ResetSelectedCards();
             //BuildVocabArray();
             PutVocabularyOntoCards();
             PlaceCardsOnTransforms();
-            shuffleButton.SetActive(false);
             break;
 
         case "showSelectedCards":
@@ -488,10 +436,6 @@ public class CardPlacement : UdonSharpBehaviour
             debugLog.text = "Deserialization switch is working!";
             IntractableCards();
             ResetSelectedCards();
-            break;
-
-        case "playerAdded":
-            CurrentPlayers();
             break;
 
         case "justTesting":
@@ -617,36 +561,5 @@ public class CardPlacement : UdonSharpBehaviour
         SelectCards(15);
         Debug.Log("This is button 15");
     }
-
-    //Player buttons
-    public void PlayerOneButton()
-    {
-        Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        SelectPlayerNumber(1);
-        Debug.Log("This is player 1");
-    }
-
-    public void PlayerTwoButton()
-    {
-        Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        SelectPlayerNumber(2);
-        Debug.Log("This is player 2");
-    }
-
-    public void PlayerThreeButton()
-    {
-        Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        SelectPlayerNumber(3);
-        Debug.Log("This is player 3");
-    }
-
-    public void PlayerFourButton()
-    {
-        Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        SelectPlayerNumber(4);
-        Debug.Log("This is player 4");
-    }
-//Let's look at the string stuff
-
     
 }

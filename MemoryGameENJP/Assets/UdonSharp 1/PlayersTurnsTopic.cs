@@ -6,8 +6,9 @@ using TMPro;
 
 public class PlayersTurnsTopic : UdonSharpBehaviour
 {
+    //Reference Scripts
     public CardPlacement CardPlacement;
-        //Mainboard
+    //Mainboard
     public GameObject PlayerTextEmpty;
     public GameObject PlayerJoinButtonsEmpty;
     public GameObject CardTopicEmpty;
@@ -44,7 +45,6 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
 
     [UdonSynced] public int[] foundCards = new int[16];
     [UdonSynced] public int[] notFoundCards = new int[16];
-    [UdonSynced] public string synchronizationSwitch;
     [UdonSynced] public int[] playerIds = new int[4];
     [UdonSynced] public string[] playerDisplayNames = new string[4];
     [UdonSynced] public string setToUse;
@@ -54,6 +54,7 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
     void Start()
     {
         GatherBoardArrays();
+        InitializeVocabSets();
     }
 
     public void GatherBoardArrays()
@@ -82,6 +83,18 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
 
         private void InitializeVocabSets()
     {
+        faceParts = "1, one\nred, 2, two\norange, 3, three\nyellow, 4, four\ngreen, 5, five\nblue, 6, six\npurple, 7, seven\nblack, 8, eight\nwhite";
+        animals = "1, one\nred, 2, two\norange, 3, three\nyellow, 4, four\ngreen, 5, five\nblue, 6, six\npurple, 7, seven\nblack, 8, eight\nwhite";
+        fruits = "1, one\nred, 2, two\norange, 3, three\nyellow, 4, four\ngreen, 5, five\nblue, 6, six\npurple, 7, seven\nblack, 8, eight\nwhite";
+        jobs = "1, one\nred, 2, two\norange, 3, three\nyellow, 4, four\ngreen, 5, five\nblue, 6, six\npurple, 7, seven\nblack, 8, eight\nwhite";
+        familyMembers = "1, one\nred, 2, two\norange, 3, three\nyellow, 4, four\ngreen, 5, five\nblue, 6, six\npurple, 7, seven\nblack, 8, eight\nwhite";
+        questionableActivities = "1, one\nred, 2, two\norange, 3, three\nyellow, 4, four\ngreen, 5, five\nblue, 6, six\npurple, 7, seven\nblack, 8, eight\nwhite";
+        schoolSubjects = "1, one\nred, 2, two\norange, 3, three\nyellow, 4, four\ngreen, 5, five\nblue, 6, six\npurple, 7, seven\nblack, 8, eight\nwhite";
+        love = "1, one\nred, 2, two\norange, 3, three\nyellow, 4, four\ngreen, 5, five\nblue, 6, six\npurple, 7, seven\nblack, 8, eight\nwhite";
+        fighting = "1, one\nred, 2, two\norange, 3, three\nyellow, 4, four\ngreen, 5, five\nblue, 6, six\npurple, 7, seven\nblack, 8, eight\nwhite";    
+        kansaiben = "1, one\nred, 2, two\norange, 3, three\nyellow, 4, four\ngreen, 5, five\nblue, 6, six\npurple, 7, seven\nblack, 8, eight\nwhite";
+        typesOfGovernment = "1, one\nred, 2, two\norange, 3, three\nyellow, 4, four\ngreen, 5, five\nblue, 6, six\npurple, 7, seven\nblack, 8, eight\nwhite";
+        leftovers = "1, one\nred, 2, two\norange, 3, three\nyellow, 4, four\ngreen, 5, five\nblue, 6, six\npurple, 7, seven\nblack, 8, eight\nwhite";
         faceParts = "face, 顔\nかお, ears, 耳\nみみ, nose, 鼻\nはな, hair, 髪\nかみ, mouth, 口\nくち, cheeks, 頬\nほほ, eyes, 目\nめ, eyebrows, 眉毛\nまゆげ";
         testExample = "A, あ\n lo, I, い¥n ho, U, う, E, え, O, お, KA, か, KI, き, KU, く";
     }
@@ -96,7 +109,6 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
         {
             button.SetActive(false);
         }
-        synchronizationSwitch = "playerAdded";
         RequestSerialization();
     }
     
@@ -131,7 +143,7 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
         {
             startButton.SetActive(true);
         }
-        CardPlacement.BuildVocabArray(deckName);
+        CardPlacement.BuildVocabArray();
     }
 
     public override void OnDeserialization()
@@ -139,6 +151,8 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
         UpdateCurrentPlayers();
         UpdateCurrentTopic();
     }
+
+    
     public void PlayerOneButton()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
@@ -166,6 +180,8 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
         SelectPlayerNumber(4);
         Debug.Log("This is player 4");
     }
+
+
 
     public void TopicZero()
     {
