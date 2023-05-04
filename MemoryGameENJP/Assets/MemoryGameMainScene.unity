@@ -4053,6 +4053,8 @@ MonoBehaviour:
   setToUse: 
   deckName: 
   playerCount: 0
+  currentPlayerId: 0
+  turnRoller: 0
 --- !u!1 &831966995
 GameObject:
   m_ObjectHideFlags: 0

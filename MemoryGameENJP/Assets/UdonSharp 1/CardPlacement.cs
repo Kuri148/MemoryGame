@@ -340,7 +340,9 @@ public class CardPlacement : UdonSharpBehaviour
     }
     public void NextPlayer()
     {
+        Networking.SetOwner(Networking.LocalPlayer,gameObject);
         IntractableCards();
+        PlayersTurnsTopic.RotateTurn();
         synchronizationSwitch = "goingToTheNextPlayer";
         RequestSerialization();
         //Do I need to change ownership here?
@@ -454,27 +456,39 @@ public class CardPlacement : UdonSharpBehaviour
     {
         //Right in if statement here, so only one player can access; And cannot steal ownership
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        SelectCards(0);
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        {
+            SelectCards(0);
+        }
         Debug.Log("This is button 0");
     }
     public void TellMeYourName1()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        SelectCards(1);
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        {
+            SelectCards(1);
+        }
         Debug.Log("This is button 1");
     }
 
     public void TellMeYourName2()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        SelectCards(2);
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        {
+            SelectCards(2);
+        }
         Debug.Log("This is button 2");
     }    
     
     public void TellMeYourName3()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        SelectCards(3);
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        {
+            SelectCards(3);
+        }
         Debug.Log("This is button 3");
     }    
     
@@ -488,77 +502,110 @@ public class CardPlacement : UdonSharpBehaviour
     public void TellMeYourName5()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        SelectCards(5);
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        {
+            SelectCards(5);
+        }
         Debug.Log("This is button 5");
     }    
     
     public void TellMeYourName6()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        SelectCards(6);
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        {
+            SelectCards(6);
+        }
         Debug.Log("This is button 6");
     }    
     
     public void TellMeYourName7()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        SelectCards(7);
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        {
+            SelectCards(7);
+        }
         Debug.Log("This is button 7");
     }    
     
     public void TellMeYourName8()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        SelectCards(8);
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        {
+            SelectCards(8);
+        }
         Debug.Log("This is button 8");
     }    
     
     public void TellMeYourName9()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        SelectCards(9);
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        {
+            SelectCards(9);
+        }
         Debug.Log("This is button 9");
     }    
     
     public void TellMeYourName10()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        SelectCards(10);
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        {
+            SelectCards(10);
+        }
         Debug.Log("This is button 10");
     }    
     
     public void TellMeYourName11()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        SelectCards(11);
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        {
+            SelectCards(11);
+        }
         Debug.Log("This is button 11");
     }    
     
     public void TellMeYourName12()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        SelectCards(12);
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        {
+            SelectCards(12);
+        }
         Debug.Log("This is button 12");
     }    
     
     public void TellMeYourName13()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        SelectCards(13);
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        {
+            SelectCards(13);
+        }
         Debug.Log("This is button 13");
     }    
     
     public void TellMeYourName14()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        SelectCards(14);
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        {
+            SelectCards(14);
+        }
         Debug.Log("This is button 14");
     }    
     
     public void TellMeYourName15()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        SelectCards(15);
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        {
+            SelectCards(15);
+        }
         Debug.Log("This is button 15");
     }
     

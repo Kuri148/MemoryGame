@@ -50,6 +50,8 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
     [UdonSynced] public string setToUse;
     [UdonSynced] public string deckName;
     [UdonSynced] public int playerCount;
+    [UdonSynced] public int currentPlayerId;
+    [UdonSynced] public int turnRoller = 0;
 
     void Start()
     {
@@ -146,6 +148,20 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
         CardPlacement.BuildVocabArray();
     }
 
+    public void RotateTurn()
+    {
+        currentPlayerId = playerIds[turnRoller];
+        while (currentPlayerId == -1)
+        {
+            turnRoller++;
+            if (turnRoller == 4)
+            {
+                turnRoller = 0;
+            }
+            currentPlayerId = playerIds[turnRoller];
+            RequestSerialization();
+        }
+    }
     public override void OnDeserialization()
     {
         UpdateCurrentPlayers();
