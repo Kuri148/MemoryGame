@@ -46,7 +46,6 @@ public class CardPlacement : UdonSharpBehaviour
     [UdonSynced] public int[] notFoundCards = new int[16];
     [UdonSynced] public bool isCorrect;
     [UdonSynced] public string synchronizationSwitch;
-    [UdonSynced] public int[] playerIds = new int[4];
     [UdonSynced] public string[] playerDisplayNames = new string[4];
 
     
@@ -135,6 +134,7 @@ public class CardPlacement : UdonSharpBehaviour
         ResetSelectedCards();
         RandomizeTransforms();
         SetFoundAndNotFoundCards();
+        PlayersTurnsTopic.RotateTurn();
         synchronizationSwitch = "setBoard";
         RequestSerialization();
         PutVocabularyOntoCards();
@@ -345,9 +345,6 @@ public class CardPlacement : UdonSharpBehaviour
         PlayersTurnsTopic.RotateTurn();
         synchronizationSwitch = "goingToTheNextPlayer";
         RequestSerialization();
-        //Do I need to change ownership here?
-        //if (!isCorrect)
-            //HideIncorrectPair(selectedCardValues);
         ResetSelectedCards();
         nextButton.SetActive(false);
 

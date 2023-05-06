@@ -25,7 +25,7 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
     public GameObject cardBox;
     public string[] vocabSet;
     public GameObject nextButton;
-
+    public TextMeshProUGUI turnTrackerDisplayBoard;
     //Memory decks here
     public string faceParts;
     public string animals;
@@ -150,6 +150,10 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
 
     public void RotateTurn()
     {
+        Networking.SetOwner(Networking.LocalPlayer,gameObject);
+        int rotateTurnCount = 0;
+        debugLog.text = $"RotateTurn Fired {rotateTurnCount} times";
+        rotateTurnCount++;   
         currentPlayerId = playerIds[turnRoller];
         while (currentPlayerId == -1)
         {
@@ -159,13 +163,22 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
                 turnRoller = 0;
             }
             currentPlayerId = playerIds[turnRoller];
-            RequestSerialization();
         }
+        turnRoller++;
+        RequestSerialization();
+        UpdateTurnTrackerDisplayBoard();
     }
+
+    public void UpdateTurnTrackerDisplayBoard()
+    {
+        turnTrackerDisplayBoard.text = $"The turn roller is at {turnRoller}. The current player id is {currentPlayerId}. The player route is: {playerIds[0]}, {playerIds[1]}, {playerIds[2]}, {playerIds[3]}.";
+    }
+
     public override void OnDeserialization()
     {
         UpdateCurrentPlayers();
         UpdateCurrentTopic();
+        UpdateTurnTrackerDisplayBoard();
     }
 
     
