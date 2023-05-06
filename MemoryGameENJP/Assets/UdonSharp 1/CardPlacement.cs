@@ -283,9 +283,10 @@ public class CardPlacement : UdonSharpBehaviour
                 Debug.Log("Correct!");
                 isCorrect = true;
                 AdjustFoundAndNotFoundCards(firstCard, secondCard);
+                PlayersTurnsTopic.ScoreGoesUp();
                 synchronizationSwitch = "showSelectedCards";
                 RequestSerialization();
-                NextButtonAppears();
+                NextPlayer(isCorrect);
                 return;//Do something else here. 
             }
             else
@@ -303,6 +304,7 @@ public class CardPlacement : UdonSharpBehaviour
                     Debug.Log("Oh dear, it isn't a match.");
                     synchronizationSwitch = "showSelectedCards";
                     RequestSerialization();
+                    isCorrect = false;
                     NextButtonAppears();
                 }
             }
@@ -338,16 +340,24 @@ public class CardPlacement : UdonSharpBehaviour
     {
         nextButton.SetActive(true);
     }
-    public void NextPlayer()
+    public void NextPlayer(bool isCorrect)
     {
         Networking.SetOwner(Networking.LocalPlayer,gameObject);
-        IntractableCards();
-        PlayersTurnsTopic.RotateTurn();
+        if (isCorrect)
+        {
+            IntractableCards();
+            PlayersTurnsTopic.ScoreGoesUp();
+            ResetSelectedCards();
+        }
+        else
+        {
+            //You need to turn off the buttons here and add in the next button for single player and other people.
+            ResetSelectedCards();
+            PlayersTurnsTopic.RotateTurn();
+        }
+        
         synchronizationSwitch = "goingToTheNextPlayer";
         RequestSerialization();
-        ResetSelectedCards();
-        nextButton.SetActive(false);
-
     }
     public void HideIncorrectPair(int[] incorrectPair)
     {

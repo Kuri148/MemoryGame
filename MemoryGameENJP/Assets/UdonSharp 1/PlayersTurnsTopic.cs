@@ -52,6 +52,8 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
     [UdonSynced] public int playerCount;
     [UdonSynced] public int currentPlayerId;
     [UdonSynced] public int turnRoller = 0;
+    [UdonSynced] public int[] playerScores = new int[4];
+
 
     void Start()
     {
@@ -80,6 +82,7 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
         {
             playerIds[i] = -1;
             playerDisplayNames[i] = "nobody";
+            playerScores[i] = 0;
         }
     }
 
@@ -122,7 +125,7 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
             if (playerIds[i] != -1)
             {
                 playerButtons[i].SetActive(false);
-                playerText[i].GetComponent<TextMeshProUGUI>().text = playerDisplayNames[i];
+                playerText[i].GetComponent<TextMeshProUGUI>().text = playerDisplayNames[i] + " " + playerScores[i];
             }
         printOut = printOut + " " + playerDisplayNames[i];
         }
@@ -174,6 +177,14 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
         turnTrackerDisplayBoard.text = $"The turn roller is at {turnRoller}. The current player id is {currentPlayerId}. The player route is: {playerIds[0]}, {playerIds[1]}, {playerIds[2]}, {playerIds[3]}.";
     }
 
+    public void ScoreGoesUp()
+    {
+        Networking.SetOwner(Networking.LocalPlayer,gameObject);
+        playerScores[turnRoller] ++;
+        Debug.Log($"The score goes up {playerScores[turnRoller]}");
+        RequestSerialization();
+        UpdateCurrentPlayers();
+    }
     public override void OnDeserialization()
     {
         UpdateCurrentPlayers();
