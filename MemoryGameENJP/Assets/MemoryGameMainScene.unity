@@ -4158,6 +4158,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  showStartButton: 1
   shuffleButton: {fileID: 0}
   debugLog: {fileID: 1869429378}
   cardBox: {fileID: 1095297439}
@@ -4191,6 +4192,7 @@ MonoBehaviour:
   playerCount: 0
   currentPlayerId: 0
   turnRoller: 0
+  playerScores: 00000000000000000000000000000000
 --- !u!1 &831966995
 GameObject:
   m_ObjectHideFlags: 0
@@ -5946,6 +5948,7 @@ MonoBehaviour:
   selectedCards:
   - {fileID: 0}
   - {fileID: 0}
+  canFlip: 1
   nextButton: {fileID: 1470632569}
   selectedCardValues: 0000000000000000
   foundCards: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
@@ -7465,7 +7468,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1470632570
 RectTransform:
   m_ObjectHideFlags: 0

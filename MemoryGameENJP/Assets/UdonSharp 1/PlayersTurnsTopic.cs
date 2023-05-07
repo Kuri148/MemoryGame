@@ -18,6 +18,7 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
     public GameObject[] playerButtons = new GameObject[4];
     public GameObject[] cardTopics = new GameObject[12];
     public GameObject[] playerText = new GameObject[4];
+    public bool showStartButton = true;
     
     //Gameplay
     public GameObject shuffleButton;
@@ -144,9 +145,10 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
     public void UpdateCurrentTopic()
     {
         topicChoice.text = deckName;
-        if (setToUse != null && playerCount > 0)
+        if (setToUse != null && playerCount > 0 && showStartButton == true)
         {
             startButton.SetActive(true);
+            showStartButton = false;
         }
         CardPlacement.BuildVocabArray();
     }
