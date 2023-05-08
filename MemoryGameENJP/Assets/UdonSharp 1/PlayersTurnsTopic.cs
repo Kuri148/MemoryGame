@@ -107,7 +107,7 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
     public void SelectPlayerNumber(int playerNumber)
     {
         playerCount++;
-        debugLog.text = Networking.GetOwner(PlayerJoinButtonsEmpty).playerId.ToString();
+        //debugLog.text = Networking.GetOwner(PlayerJoinButtonsEmpty).playerId.ToString();
         playerDisplayNames[playerNumber - 1] = Networking.LocalPlayer.displayName;
         playerIds[playerNumber - 1] = Networking.LocalPlayer.playerId;
         UpdateCurrentPlayers();
@@ -157,7 +157,7 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
     {
         Networking.SetOwner(Networking.LocalPlayer,gameObject);
         int rotateTurnCount = 0;
-        debugLog.text = $"RotateTurn Fired {rotateTurnCount} times";
+        //debugLog.text = $"RotateTurn Fired {rotateTurnCount} times";
         rotateTurnCount++;   
         currentPlayerId = playerIds[turnRoller];
         while (currentPlayerId == -1)

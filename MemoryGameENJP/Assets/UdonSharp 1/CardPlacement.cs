@@ -36,6 +36,7 @@ public class CardPlacement : UdonSharpBehaviour
     public GameObject placeKeeper;
     public GameObject[] selectedCards = new GameObject[2];
     public bool canFlip = true;
+    public bool isCorrect = false;
     public GameObject nextButton;
 
     //Memory decks here
@@ -45,7 +46,6 @@ public class CardPlacement : UdonSharpBehaviour
     [UdonSynced] public int[] selectedCardValues = new int[2];
     [UdonSynced] public int[] foundCards = new int[16];
     [UdonSynced] public int[] notFoundCards = new int[16];
-    [UdonSynced] public bool isCorrect;
     [UdonSynced] public string synchronizationSwitch;
     [UdonSynced] public string[] playerDisplayNames = new string[4];
 
@@ -275,6 +275,7 @@ public class CardPlacement : UdonSharpBehaviour
     {
         int correctOptionOne = 0;
         int correctOptionTwo = 1;
+        isCorrect = false;
 
         for (int i = 0; i < 16; i++)
         {
@@ -282,44 +283,35 @@ public class CardPlacement : UdonSharpBehaviour
             {
                 Debug.Log("Correct!");
                 isCorrect = true;
-                AdjustFoundAndNotFoundCards(firstCard, secondCard);
-                synchronizationSwitch = "showSelectedCards";
-                RequestSerialization();
-                PlayersTurnsTopic.ScoreGoesUp();
-                GoAgain();
-                return;
             }
-            else
-            {
-                correctOptionOne += 2; 
-                correctOptionTwo += 2;
-                if (correctOptionOne == 16 && correctOptionTwo == 17)
-                {
-                    correctOptionOne = 1; 
-                    correctOptionTwo = 0;
-                }
-                if (correctOptionOne == 17 && correctOptionTwo == 16)
-                {
-                    isCorrect = false;
-                    Debug.Log("Oh dear, it isn't a match.");
-                    synchronizationSwitch = "showSelectedCards";
-                    RequestSerialization();
-                    isCorrect = false;
-                    NextButtonAppears();
-                }
-            }
+            correctOptionOne += 2; 
+            correctOptionTwo += 2;
         }
+        synchronizationSwitch = "showSelectedCards";
+        RequestSerialization();
+        RevealSelectedCardsToEveryone();
+        if (isCorrect == true)
+        {
+            Debug.Log($"{isCorrect} IsCorrect branch is accessed");
+            synchronizationSwitch = "justTesting";
+            AdjustFoundAndNotFoundCards(firstCard, secondCard);
+            debugLog.text = ($"{notFoundCards[0]} {notFoundCards[1]} {notFoundCards[2]} {notFoundCards[3]} {notFoundCards[4]} {notFoundCards[5]} {notFoundCards[6]} {notFoundCards[7]} {notFoundCards[8]} {notFoundCards[9]} {notFoundCards[10]} {notFoundCards[11]} {notFoundCards[12]} {notFoundCards[13]} {notFoundCards[14]} {notFoundCards[15]} ");
+            RequestSerialization();
+            IntractableCards();
+        }
+        //PlayersTurnsTopic.ScoreGoesUp();
+        //GoAgain(firstCard, secondCard);
     }
+
 
      public void GoAgain()
     {
-        ResetSelectedCards();
         IntractableCards();
+        ResetSelectedCards();
     }
     public void NextPlayer()
     {
         Networking.SetOwner(Networking.LocalPlayer,gameObject);
-        //You need to turn off the buttons here and add in the next button for single player and other people.
         nextButton.SetActive(false);
         PlayersTurnsTopic.RotateTurn();
         ResetSelectedCards();
@@ -426,6 +418,17 @@ public class CardPlacement : UdonSharpBehaviour
                 }
             }
         }
+        foreach (int foundCardValue in foundCards)
+        {
+            foreach (GameObject card in cardDeck)
+            {
+                if (card.name == foundCardValue.ToString())
+                {
+                    GameObject cardText = card.transform.GetChild(0).gameObject;
+                    cardText.SetActive(true);
+                }
+            }
+        }
     }
     public override void OnDeserialization()
     {
@@ -445,18 +448,19 @@ public class CardPlacement : UdonSharpBehaviour
             break;
 
         case "goingToTheNextPlayer":
-            debugLog.text = "Deserialization switch is working!";
+            //debugLog.text = "Deserialization switch is working!";
             IntractableCards();
             ResetSelectedCards();
             nextButton.SetActive(false);
             break;
 
         case "justTesting":
-            debugLog.text = "case Deserialization switch is working!";
+            IntractableCards();
+            //debugLog.text = "case Deserialization switch is working!";
             break;
         
         default:
-            debugLog.text = "Deserialization is firing, but the switch is incorrect";
+            //debugLog.text = "Deserialization is firing, but the switch is incorrect";
             break;
             
         }
