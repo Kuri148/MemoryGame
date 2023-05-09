@@ -41,6 +41,7 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
     public string typesOfGovernment;
     public string leftovers;
     public string testExample = "A, あ\n lo, I, い¥n ho, U, う, E, え, O, お, KA, か, KI, き, KU, くki";
+    int rotateTurnCount = 0;
     
     //UdonSynced Varibles below here:
 
@@ -108,8 +109,8 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
     {
         playerCount++;
         //debugLog.text = Networking.GetOwner(PlayerJoinButtonsEmpty).playerId.ToString();
-        playerDisplayNames[playerNumber - 1] = Networking.LocalPlayer.displayName;
-        playerIds[playerNumber - 1] = Networking.LocalPlayer.playerId;
+        playerDisplayNames[playerNumber] = Networking.LocalPlayer.displayName;
+        playerIds[playerNumber] = Networking.LocalPlayer.playerId;
         UpdateCurrentPlayers();
         foreach (GameObject button in playerButtons)
         {
@@ -156,20 +157,37 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
     public void RotateTurn()
     {
         Networking.SetOwner(Networking.LocalPlayer,gameObject);
-        int rotateTurnCount = 0;
-        //debugLog.text = $"RotateTurn Fired {rotateTurnCount} times";
-        rotateTurnCount++;   
+
+        //Debug rotation
+        debugLog.text = $"RotateTurn Fired {rotateTurnCount} times";
+        rotateTurnCount++;
+        
+        //Plain roller
+        turnRoller++;
+        if (turnRoller == 4)
+        {
+            turnRoller = 0;
+        }
         currentPlayerId = playerIds[turnRoller];
+
+        //Player not there, or roller is out of bounds
         while (currentPlayerId == -1)
         {
-            turnRoller++;
-            if (turnRoller == 4)
+
+            currentPlayerId = playerIds[turnRoller];
+            if (currentPlayerId == -1)
             {
+                turnRoller++;
+                if (turnRoller == 4)
+                {
                 turnRoller = 0;
+                }
             }
+            //Roller the result
             currentPlayerId = playerIds[turnRoller];
         }
-        turnRoller++;
+        
+        //Update everyone and board
         RequestSerialization();
         UpdateTurnTrackerDisplayBoard();
     }
@@ -198,28 +216,28 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
     public void PlayerOneButton()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        SelectPlayerNumber(1);
+        SelectPlayerNumber(0);
         Debug.Log("This is player 1");
     }
 
     public void PlayerTwoButton()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        SelectPlayerNumber(2);
+        SelectPlayerNumber(1);
         Debug.Log("This is player 2");
     }
 
     public void PlayerThreeButton()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        SelectPlayerNumber(3);
+        SelectPlayerNumber(2);
         Debug.Log("This is player 3");
     }
 
     public void PlayerFourButton()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        SelectPlayerNumber(4);
+        SelectPlayerNumber(3);
         Debug.Log("This is player 4");
     }
 

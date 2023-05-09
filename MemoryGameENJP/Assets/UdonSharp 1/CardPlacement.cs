@@ -23,6 +23,9 @@ public class CardPlacement : UdonSharpBehaviour
     public GameObject[] cardTopics = new GameObject[12];
     public GameObject[] playerText = new GameObject[4];
     
+    //Debugging
+    public TextMeshProUGUI cardSelectedAndIsCorrect;
+
     //Gameplay
     public TextMeshProUGUI debugLog;
     public GameObject[] cardDeck = new GameObject[16];
@@ -279,7 +282,7 @@ public class CardPlacement : UdonSharpBehaviour
 
         for (int i = 0; i < 16; i++)
         {
-            if (firstCard == correctOptionOne && secondCard == correctOptionTwo)
+            if ((firstCard == correctOptionOne && secondCard == correctOptionTwo) || (firstCard == correctOptionTwo && secondCard == correctOptionOne))
             {
                 Debug.Log("Correct!");
                 isCorrect = true;
@@ -290,6 +293,7 @@ public class CardPlacement : UdonSharpBehaviour
         synchronizationSwitch = "showSelectedCards";
         RequestSerialization();
         RevealSelectedCardsToEveryone();
+        cardSelectedAndIsCorrect.text =  " " + isCorrect.ToString() + " " + selectedCardValues[0].ToString() + " " + selectedCardValues[1].ToString();
         if (isCorrect == true)
         {
             Debug.Log($"{isCorrect} IsCorrect branch is accessed");
@@ -298,6 +302,7 @@ public class CardPlacement : UdonSharpBehaviour
             debugLog.text = ($"{notFoundCards[0]} {notFoundCards[1]} {notFoundCards[2]} {notFoundCards[3]} {notFoundCards[4]} {notFoundCards[5]} {notFoundCards[6]} {notFoundCards[7]} {notFoundCards[8]} {notFoundCards[9]} {notFoundCards[10]} {notFoundCards[11]} {notFoundCards[12]} {notFoundCards[13]} {notFoundCards[14]} {notFoundCards[15]} ");
             RequestSerialization();
             IntractableCards();
+            ResetSelectedCards();
         }
         //PlayersTurnsTopic.ScoreGoesUp();
         //GoAgain(firstCard, secondCard);
