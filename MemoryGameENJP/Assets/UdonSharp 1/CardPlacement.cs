@@ -303,9 +303,8 @@ public class CardPlacement : UdonSharpBehaviour
             RequestSerialization();
             IntractableCards();
             ResetSelectedCards();
+            PlayersTurnsTopic.ScoreGoesUp();
         }
-        //PlayersTurnsTopic.ScoreGoesUp();
-        //GoAgain(firstCard, secondCard);
     }
 
 

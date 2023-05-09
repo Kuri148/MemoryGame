@@ -19,6 +19,8 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
     public GameObject[] cardTopics = new GameObject[12];
     public GameObject[] playerText = new GameObject[4];
     public bool showStartButton = true;
+    public TextMeshProUGUI winnerBoard;
+    public GameObject playAgainButton;
     
     //Gameplay
     public GameObject shuffleButton;
@@ -55,6 +57,8 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
     [UdonSynced] public int currentPlayerId;
     [UdonSynced] public int turnRoller = 0;
     [UdonSynced] public int[] playerScores = new int[4];
+    [UdonSynced] public int pairsFound = 0;
+    [UdonSynced] public string winnerString = "Wow look at all this stuff";
 
 
     void Start()
@@ -129,7 +133,7 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
                 playerButtons[i].SetActive(false);
                 playerText[i].GetComponent<TextMeshProUGUI>().text = playerDisplayNames[i] + " " + playerScores[i];
             }
-        printOut = printOut + " " + playerDisplayNames[i];
+        printOut = printOut + " " + playerDisplayNames[i] + " " + playerScores[i];
         }
         Debug.Log(printOut);
         //debugLog.text = "Everything all right here?";
@@ -195,16 +199,44 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
     public void UpdateTurnTrackerDisplayBoard()
     {
         turnTrackerDisplayBoard.text = $"The turn roller is at {turnRoller}. The current player id is {currentPlayerId}. The player route is: {playerIds[0]}, {playerIds[1]}, {playerIds[2]}, {playerIds[3]}.";
+        winnerBoard.text = winnerString;
     }
 
     public void ScoreGoesUp()
     {
         Networking.SetOwner(Networking.LocalPlayer,gameObject);
         playerScores[turnRoller] ++;
-        Debug.Log($"The score goes up {playerScores[turnRoller]}");
+        pairsFound++;
+        Debug.Log($"The score goes up {playerScores[turnRoller]}. Total pairs found {pairsFound}.");
+        if (pairsFound >= 8)
+        {
+            Debug.Log("if 8 passed");
+            CalculateTheWinner();
+            playAgainButton.SetActive(true);
+        }
         RequestSerialization();
         UpdateCurrentPlayers();
+        UpdateTurnTrackerDisplayBoard();
     }
+
+    public void CalculateTheWinner()
+    {
+        winnerString = " ";
+        int maxElement = playerScores[0];
+        for (int index = 1; index < playerScores.Length; index++)
+        {
+            if (playerScores[index] > maxElement)
+            maxElement = playerScores[index];
+        }
+        for (int i = 0; i < playerDisplayNames.Length; i++)
+        {
+            if (playerScores[i] == maxElement)
+            {
+                winnerString = winnerString + "   " + playerDisplayNames[i];
+            }
+        }
+    }
+
     public override void OnDeserialization()
     {
         UpdateCurrentPlayers();
