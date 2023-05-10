@@ -40,7 +40,7 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
     public string fighting;
     public string kansaiben;
     public string typesOfGovernment;
-    public string leftovers;
+    public string mountains;
     public string testExample = "A, あ\n lo, I, い¥n ho, U, う, E, え, O, お, KA, か, KI, き, KU, くki";
     int rotateTurnCount = 0;
     
@@ -95,17 +95,28 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
 
         private void InitializeVocabSets()
     {
-        animals = "1, one\nred, 2, two\norange, 3, three\nyellow, 4, four\ngreen, 5, five\nblue, 6, six\npurple, 7, seven\nblack, 8, eight\nwhite";
-        fruits = "1, one\nred, 2, two\norange, 3, three\nyellow, 4, four\ngreen, 5, five\nblue, 6, six\npurple, 7, seven\nblack, 8, eight\nwhite";
-        jobs = "1, one\nred, 2, two\norange, 3, three\nyellow, 4, four\ngreen, 5, five\nblue, 6, six\npurple, 7, seven\nblack, 8, eight\nwhite";
-        familyMembers = "1, one\nred, 2, two\norange, 3, three\nyellow, 4, four\ngreen, 5, five\nblue, 6, six\npurple, 7, seven\nblack, 8, eight\nwhite";
-        questionableActivities = "1, one\nred, 2, two\norange, 3, three\nyellow, 4, four\ngreen, 5, five\nblue, 6, six\npurple, 7, seven\nblack, 8, eight\nwhite";
-        schoolSubjects = "1, one\nred, 2, two\norange, 3, three\nyellow, 4, four\ngreen, 5, five\nblue, 6, six\npurple, 7, seven\nblack, 8, eight\nwhite";
-        love = "1, one\nred, 2, two\norange, 3, three\nyellow, 4, four\ngreen, 5, five\nblue, 6, six\npurple, 7, seven\nblack, 8, eight\nwhite";
-        fighting = "1, one\nred, 2, two\norange, 3, three\nyellow, 4, four\ngreen, 5, five\nblue, 6, six\npurple, 7, seven\nblack, 8, eight\nwhite";    
-        kansaiben = "1, one\nred, 2, two\norange, 3, three\nyellow, 4, four\ngreen, 5, five\nblue, 6, six\npurple, 7, seven\nblack, 8, eight\nwhite";
-        typesOfGovernment = "1, one\nred, 2, two\norange, 3, three\nyellow, 4, four\ngreen, 5, five\nblue, 6, six\npurple, 7, seven\nblack, 8, eight\nwhite";
-        leftovers = "1, one\nred, 2, two\norange, 3, three\nyellow, 4, four\ngreen, 5, five\nblue, 6, six\npurple, 7, seven\nblack, 8, eight\nwhite";
+        animals = "dog, 犬\nいぬ, cat, 猫\nねこ, elephant, 象\nぞう, bird, 鳥\nとり, bee, 蜂\nはち, fish, 魚\nさかな, snake, 蛇\nへび, cow, 牛\nうし";
+        
+        fruits = "strawberry, 苺\nいちご, banana, バナナ, apple, 林檎\nりんご, pear, 梨\nなし, grape, 葡萄\nぶどう, cherry, 桜ん坊\nさくらんぼ, lemon, 檸檬\nレモン, watermelon, 西瓜\nスイカ";
+        
+        jobs = "doctor, 医者\nいしゃ, plumber, 配管工\nはいかんこう, police officer, 警察\nけいさつ, programmer, プログラマー, teacher, 先生\nせんせい, unemployed, 無職\nむしょく, cashier, レジ, retired, 退職\nたいしょく";
+        
+        familyMembers = "father, 父\nちち, mother, 母\nはは, younger sister, 妹\nいもうと, younger brother, 弟\nおとうと, grandpa, お爺さん\nおじいさん, grandma, お婆さん\nおばあさん, older brother, お兄さん\nおにいさん, older sister, お姉さん\nおねえさん";
+        
+        questionableActivities = "doing drugs, 薬をする\nくすりをする, arson, 放火\nほうか, graffiti, 落書き\nらくがき, blackmail, 恐喝\nきょうかつ, bribe, 賄賂\nわいろ, forgery, 偽造\nぎぞう, black market, 闇市\nやみいち, catfishing, なりすまし";
+        
+        schoolSubjects = "science, 科学\nかがく, math, 数学\nすうがく, literature, 文学\nぶんがく, history, 歴史\nれきし, gym class, 体育\nたいいく, home economics, 家庭科\nかていか, art, 美術\nびじゅつ, homeroom, 朝/終礼\nちょう/しゅうれい";
+        
+        love = "first date, 初デート\nはつデート, hold hands, 手を繋ぐ\nてをつなぐ, confession, 告白\nこくはく, breakup, 別れる\nわかれる, to cheat, 浮気\nうわき, boyfriend, 彼氏\nかれし, girlfriend, 彼女\nかのじょ, ex-, 元\nもと";
+        
+        fighting = "punch, 殴る\nなぐる, kick, 蹴る\nける, pin, 動けなくする\nうごけなくする, trip, 足を引っ張る\nあしをひっぱる, push, 押す\nおす, sucker punch, いきなり殴る\nいきなりなぐる, body slam, 叩きつける\nたたきつける, choke, 首を絞める\nくびをしめる";    
+        
+        kansaiben = "what the heck, なんでやねん, no/bad, アカン, really, ほんま, thank you, おおきに, that's right, せやで, wrong, ちゃう, it suits you, におてる, funny, おもろい";
+        
+        typesOfGovernment = "democracy, 民主主義\nみんしゅしゅぎ, anarchy, 無政府\nむせいふ, communism, 共産主義\nきょうさんしゅぎ, dictatorship, 独裁\nどくさい, oligarchy, 寡頭政\nかとうせい, monarchy, 王政\nおうせい, republic, 共和国\nきょうわこく, socialism, 社会主義\nしゃかいしゅぎ";
+        
+        mountains = "mountain, 山\nやま, ridge, 尾根\nおね, peak, 頂上\nちょうじょう, foot, 麓\nふもと, ravine, 渓流\nけいりゅう, landside, 地滑り\nじすべり, spring, 泉\nいずみ, lumber road, 林道\nりんどう";
+        
         faceParts = "face, 顔\nかお, ears, 耳\nみみ, nose, 鼻\nはな, hair, 髪\nかみ, mouth, 口\nくち, cheeks, 頬\nほほ, eyes, 目\nめ, eyebrows, 眉毛\nまゆげ";
     }
     public void SelectPlayerNumber(int playerNumber)
@@ -360,7 +371,7 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
     }    public void TopicEleven()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        SelectTopic("leftovers", leftovers);
+        SelectTopic("mountains", mountains);
         Debug.Log("This is topic zero.");
     }
 }
