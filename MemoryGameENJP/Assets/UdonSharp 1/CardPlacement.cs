@@ -50,7 +50,7 @@ public class CardPlacement : UdonSharpBehaviour
     [UdonSynced] public int[] foundCards = new int[16];
     [UdonSynced] public int[] notFoundCards = new int[16];
     [UdonSynced] public string synchronizationSwitch;
-    [UdonSynced] public string[] playerDisplayNames = new string[4];
+
 
     
     //-----------------------------------------------------------------------------------------
@@ -297,7 +297,7 @@ public class CardPlacement : UdonSharpBehaviour
         if (isCorrect == true)
         {
             Debug.Log($"{isCorrect} IsCorrect branch is accessed");
-            synchronizationSwitch = "justTesting";
+            synchronizationSwitch = "isCorrect";
             AdjustFoundAndNotFoundCards(firstCard, secondCard);
             debugLog.text = ($"{notFoundCards[0]} {notFoundCards[1]} {notFoundCards[2]} {notFoundCards[3]} {notFoundCards[4]} {notFoundCards[5]} {notFoundCards[6]} {notFoundCards[7]} {notFoundCards[8]} {notFoundCards[9]} {notFoundCards[10]} {notFoundCards[11]} {notFoundCards[12]} {notFoundCards[13]} {notFoundCards[14]} {notFoundCards[15]} ");
             RequestSerialization();
@@ -307,12 +307,6 @@ public class CardPlacement : UdonSharpBehaviour
         }
     }
 
-
-     public void GoAgain()
-    {
-        IntractableCards();
-        ResetSelectedCards();
-    }
     public void NextPlayer()
     {
         Networking.SetOwner(Networking.LocalPlayer,gameObject);
@@ -356,34 +350,6 @@ public class CardPlacement : UdonSharpBehaviour
     public void NextButtonAppears()
     {
         nextButton.SetActive(true);
-    }
-   
-    /*public void HideIncorrectPair(int[] incorrectPair)
-    {
-        foreach (int mistake in incorrectPair)
-        {
-            foreach (GameObject card in cardDeck)
-            {
-                if (card.name == mistake.ToString())
-                {
-                    GameObject cardText = card.transform.GetChild(0).gameObject;
-                    cardText.SetActive(false);
-                }
-            }
-        }
-    } Not currently in use. Using intractable cards instead */
-    public void DisableCorrectPair(int[] correctPair)
-    {
-        foreach (int cardValue in correctPair)
-        {
-            foreach (GameObject card in cardDeck)
-            {
-                if (card.name == cardValue.ToString())
-                {
-                    card.GetComponent<Button>().interactable = false;
-                }
-            }
-        }
     }
 
     public void AdjustFoundAndNotFoundCards(int firstValue, int secondValue)
@@ -434,6 +400,31 @@ public class CardPlacement : UdonSharpBehaviour
             }
         }
     }
+
+    public void ResetAndClearBoard()
+    {
+        foreach (GameObject card in cardDeck)
+        {
+            card.GetComponent<Button>().interactable = true;
+            GameObject cardText = card.transform.GetChild(0).gameObject;
+            cardText.SetActive(false);
+            card.SetActive(false);
+        }
+    }
+    public void Reset()
+    {
+        Networking.SetOwner(Networking.LocalPlayer,gameObject);
+        SetFoundAndNotFoundCards();
+        ResetAndClearBoard();
+        TurnOnMenuBoard(true, false);
+
+        synchronizationSwitch = "clearingAndResetting";
+        RequestSerialization();
+        
+        PlayersTurnsTopic.PlayersAndScoresReset();
+
+    }
+
     public override void OnDeserialization()
     {
         //debugLog.text = "case Deserialization switch is working!";
@@ -458,13 +449,21 @@ public class CardPlacement : UdonSharpBehaviour
             nextButton.SetActive(false);
             break;
 
-        case "justTesting":
+        case "isCorrect":
             IntractableCards();
+            //debugLog.text = "case Deserialization switch is working!";
+            break;
+
+        case "clearingAndResetting":
+            SetFoundAndNotFoundCards();
+            ResetAndClearBoard();
+            TurnOnMenuBoard(true, false);
+            PlayersTurnsTopic.PlayersAndScoresReset();
             //debugLog.text = "case Deserialization switch is working!";
             break;
         
         default:
-            //debugLog.text = "Deserialization is firing, but the switch is incorrect";
+            debugLog.text = "Deserialization is firing, but the switch is incorrect";
             break;
             
         }

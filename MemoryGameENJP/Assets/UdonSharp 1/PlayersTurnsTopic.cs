@@ -18,7 +18,6 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
     public GameObject[] playerButtons = new GameObject[4];
     public GameObject[] cardTopics = new GameObject[12];
     public GameObject[] playerText = new GameObject[4];
-    public bool showStartButton = true;
     public TextMeshProUGUI winnerBoard;
     public GameObject playAgainButton;
     
@@ -51,7 +50,7 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
     [UdonSynced] public int[] notFoundCards = new int[16];
     [UdonSynced] public int[] playerIds = new int[4];
     [UdonSynced] public string[] playerDisplayNames = new string[4];
-    [UdonSynced] public string setToUse;
+    [UdonSynced] public string setToUse = "empty";
     [UdonSynced] public string deckName;
     [UdonSynced] public int playerCount;
     [UdonSynced] public int currentPlayerId;
@@ -59,6 +58,8 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
     [UdonSynced] public int[] playerScores = new int[4];
     [UdonSynced] public int pairsFound = 0;
     [UdonSynced] public string winnerString = "Wow look at all this stuff";
+    [UdonSynced] public bool showStartButton = true;
+    [UdonSynced] public bool deckSelected = false;
 
 
     void Start()
@@ -94,7 +95,6 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
 
         private void InitializeVocabSets()
     {
-        faceParts = "1, one\nred, 2, two\norange, 3, three\nyellow, 4, four\ngreen, 5, five\nblue, 6, six\npurple, 7, seven\nblack, 8, eight\nwhite";
         animals = "1, one\nred, 2, two\norange, 3, three\nyellow, 4, four\ngreen, 5, five\nblue, 6, six\npurple, 7, seven\nblack, 8, eight\nwhite";
         fruits = "1, one\nred, 2, two\norange, 3, three\nyellow, 4, four\ngreen, 5, five\nblue, 6, six\npurple, 7, seven\nblack, 8, eight\nwhite";
         jobs = "1, one\nred, 2, two\norange, 3, three\nyellow, 4, four\ngreen, 5, five\nblue, 6, six\npurple, 7, seven\nblack, 8, eight\nwhite";
@@ -107,7 +107,6 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
         typesOfGovernment = "1, one\nred, 2, two\norange, 3, three\nyellow, 4, four\ngreen, 5, five\nblue, 6, six\npurple, 7, seven\nblack, 8, eight\nwhite";
         leftovers = "1, one\nred, 2, two\norange, 3, three\nyellow, 4, four\ngreen, 5, five\nblue, 6, six\npurple, 7, seven\nblack, 8, eight\nwhite";
         faceParts = "face, 顔\nかお, ears, 耳\nみみ, nose, 鼻\nはな, hair, 髪\nかみ, mouth, 口\nくち, cheeks, 頬\nほほ, eyes, 目\nめ, eyebrows, 眉毛\nまゆげ";
-        testExample = "A, あ\n lo, I, い¥n ho, U, う, E, え, O, お, KA, か, KI, き, KU, く";
     }
     public void SelectPlayerNumber(int playerNumber)
     {
@@ -121,6 +120,7 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
             button.SetActive(false);
         }
         RequestSerialization();
+        UpdateCurrentTopic();
     }
     
     public void UpdateCurrentPlayers()
@@ -143,6 +143,7 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
     {
         deckName = topicName;
         setToUse = deckContents;
+        deckSelected = true;
         RequestSerialization();
         UpdateCurrentTopic();
     }
@@ -150,8 +151,9 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
     public void UpdateCurrentTopic()
     {
         topicChoice.text = deckName;
-        if (setToUse != null && playerCount > 0 && showStartButton == true)
+        if ((deckSelected == true) && (playerCount > 0) && (showStartButton == true))
         {
+            Debug.Log($"{setToUse} {playerCount} {showStartButton}");
             startButton.SetActive(true);
             showStartButton = false;
         }
@@ -235,6 +237,27 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
                 winnerString = winnerString + "   " + playerDisplayNames[i];
             }
         }
+    }
+
+    public void PlayersAndScoresReset()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            playerIds[i] = -1;
+            playerDisplayNames[i] = "nobody";
+            playerScores[i] = 0;
+            playerText[i].GetComponent<TextMeshProUGUI>().text = "Player " + i.ToString();
+        }
+        showStartButton = true;
+        deckSelected = false;
+        pairsFound = 0;
+        winnerString = " ";
+        turnRoller = 0;
+        playerCount = 0;
+        topicChoice.text = "Choose a topic.";
+        playAgainButton.SetActive(false);
+        UpdateCurrentPlayers();
+        UpdateTurnTrackerDisplayBoard();
     }
 
     public override void OnDeserialization()
