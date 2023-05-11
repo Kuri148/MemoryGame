@@ -54,7 +54,7 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
     [UdonSynced] public string deckName;
     [UdonSynced] public int playerCount;
     [UdonSynced] public int currentPlayerId;
-    [UdonSynced] public int turnRoller = 0;
+    [UdonSynced] public int turnRoller = -1;
     [UdonSynced] public int[] playerScores = new int[4];
     [UdonSynced] public int pairsFound = 0;
     [UdonSynced] public string winnerString = "Wow look at all this stuff";
@@ -203,10 +203,9 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
             }
             //Roller the result
             currentPlayerId = playerIds[turnRoller];
-            currentPlayerDisplayName = playerDisplayNames[turnRoller];
-            Debug.Log($"Here is the current player {currentPlayerDisplayName}");
         }
-        
+        currentPlayerDisplayName = playerDisplayNames[turnRoller];
+        Debug.Log($"Here is the current player {currentPlayerDisplayName}");
         //Update everyone and board
         RequestSerialization();
         UpdateTurnTrackerDisplayBoard();
@@ -273,7 +272,7 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
         deckSelected = false;
         pairsFound = 0;
         winnerString = " ";
-        turnRoller = 0;
+        turnRoller = -1;
         playerCount = 0;
         currentPlayerDisplayName = " ";
         topicChoice.text = "Choose a topic.";
