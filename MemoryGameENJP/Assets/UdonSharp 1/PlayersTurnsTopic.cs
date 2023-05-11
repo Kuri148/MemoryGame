@@ -58,7 +58,8 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
     [UdonSynced] public int[] playerScores = new int[4];
     [UdonSynced] public int pairsFound = 0;
     [UdonSynced] public string winnerString = "Wow look at all this stuff";
-    [UdonSynced] public bool showStartButton = true;
+    [UdonSynced] public string currentPlayerDisplayName;
+    /* Testing if this needs to be synced*/ public bool showStartButton = true;
     [UdonSynced] public bool deckSelected = false;
 
 
@@ -202,6 +203,8 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
             }
             //Roller the result
             currentPlayerId = playerIds[turnRoller];
+            currentPlayerDisplayName = playerDisplayNames[turnRoller];
+            Debug.Log($"Here is the current player {currentPlayerDisplayName}");
         }
         
         //Update everyone and board
@@ -211,8 +214,15 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
 
     public void UpdateTurnTrackerDisplayBoard()
     {
-        turnTrackerDisplayBoard.text = $"The turn roller is at {turnRoller}. The current player id is {currentPlayerId}. The player route is: {playerIds[0]}, {playerIds[1]}, {playerIds[2]}, {playerIds[3]}.";
-        winnerBoard.text = winnerString;
+        //turnTrackerDisplayBoard.text = $"The turn roller is at {turnRoller}. The player route is: {playerIds[0]}, {playerIds[1]}, {playerIds[2]}, {playerIds[3]}.";
+        turnTrackerDisplayBoard.text = $"{currentPlayerDisplayName}";
+        if (pairsFound >= 8)
+        {
+            playAgainButton.SetActive(true);
+            turnTrackerDisplayBoard.text = "Congratulations:" + " " +  winnerString;
+        }
+
+
     }
 
     public void ScoreGoesUp()
@@ -232,7 +242,7 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
         UpdateTurnTrackerDisplayBoard();
     }
 
-    public void CalculateTheWinner()
+     void CalculateTheWinner()
     {
         winnerString = " ";
         int maxElement = playerScores[0];
@@ -265,6 +275,7 @@ public class PlayersTurnsTopic : UdonSharpBehaviour
         winnerString = " ";
         turnRoller = 0;
         playerCount = 0;
+        currentPlayerDisplayName = " ";
         topicChoice.text = "Choose a topic.";
         playAgainButton.SetActive(false);
         UpdateCurrentPlayers();
