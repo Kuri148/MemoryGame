@@ -23,6 +23,9 @@ public class CardPlacement : UdonSharpBehaviour
     public GameObject[] cardTopics = new GameObject[12];
     public GameObject[] playerText = new GameObject[4];
     
+    //Debugging
+    public TextMeshProUGUI cardSelectedAndIsCorrect;
+
     //Gameplay
     public TextMeshProUGUI debugLog;
     public GameObject[] cardDeck = new GameObject[16];
@@ -35,6 +38,8 @@ public class CardPlacement : UdonSharpBehaviour
     public Vector3 noVectorYet;
     public GameObject placeKeeper;
     public GameObject[] selectedCards = new GameObject[2];
+    public bool canFlip = true;
+    public bool isCorrect = false;
     public GameObject nextButton;
 
     //Memory decks here
@@ -44,10 +49,8 @@ public class CardPlacement : UdonSharpBehaviour
     [UdonSynced] public int[] selectedCardValues = new int[2];
     [UdonSynced] public int[] foundCards = new int[16];
     [UdonSynced] public int[] notFoundCards = new int[16];
-    [UdonSynced] public bool isCorrect;
     [UdonSynced] public string synchronizationSwitch;
-    [UdonSynced] public int[] playerIds = new int[4];
-    [UdonSynced] public string[] playerDisplayNames = new string[4];
+
 
     
     //-----------------------------------------------------------------------------------------
@@ -135,6 +138,7 @@ public class CardPlacement : UdonSharpBehaviour
         ResetSelectedCards();
         RandomizeTransforms();
         SetFoundAndNotFoundCards();
+        PlayersTurnsTopic.RotateTurn();
         synchronizationSwitch = "setBoard";
         RequestSerialization();
         PutVocabularyOntoCards();
@@ -240,12 +244,10 @@ public class CardPlacement : UdonSharpBehaviour
 
     public void ResetSelectedCards()
     {
-        for (int i = 0; i < selectedCardValues.Length; i++)
-        {
-            int uniqueLows = -1;
-            selectedCardValues[i] = uniqueLows;
-            uniqueLows--;
-        }
+        canFlip = true;
+        selectedCardValues[0] = -1;
+        selectedCardValues[1] = -2;
+
     }
 
     public void SelectCards(int card)
@@ -260,9 +262,10 @@ public class CardPlacement : UdonSharpBehaviour
                 break;
             }
         }
-        if (selectedCardValues[0] != -1 && selectedCardValues[1] != -1)
+        if (selectedCardValues[0] != -1 && selectedCardValues[1] != -2)
         {
             Debug.Log($"Chosen pair: ({selectedCardValues[0]}, {selectedCardValues[1]})");
+            canFlip = false;
             CheckCards(selectedCardValues[0], selectedCardValues[1]);
         }
         else
@@ -275,38 +278,44 @@ public class CardPlacement : UdonSharpBehaviour
     {
         int correctOptionOne = 0;
         int correctOptionTwo = 1;
+        isCorrect = false;
 
         for (int i = 0; i < 16; i++)
         {
-            if (firstCard == correctOptionOne && secondCard == correctOptionTwo) //((firstCard, secondCard) == (correctOptionOne, correctOptionTwo))
+            if ((firstCard == correctOptionOne && secondCard == correctOptionTwo) || (firstCard == correctOptionTwo && secondCard == correctOptionOne))
             {
                 Debug.Log("Correct!");
                 isCorrect = true;
-                AdjustFoundAndNotFoundCards(firstCard, secondCard);
-                synchronizationSwitch = "showSelectedCards";
-                RequestSerialization();
-                NextButtonAppears();
-                return;//Do something else here. 
             }
-            else
-            {
-                correctOptionOne += 2; 
-                correctOptionTwo += 2;
-                if (correctOptionOne == 16 && correctOptionTwo == 17)
-                {
-                    correctOptionOne = 1; 
-                    correctOptionTwo = 0;
-                }
-                if (correctOptionOne == 17 && correctOptionTwo == 16)
-                {
-                    isCorrect = false;
-                    Debug.Log("Oh dear, it isn't a match.");
-                    synchronizationSwitch = "showSelectedCards";
-                    RequestSerialization();
-                    NextButtonAppears();
-                }
-            }
+            correctOptionOne += 2; 
+            correctOptionTwo += 2;
         }
+        synchronizationSwitch = "showSelectedCards";
+        RequestSerialization();
+        RevealSelectedCardsToEveryone();
+        cardSelectedAndIsCorrect.text =  " " + isCorrect.ToString() + " " + selectedCardValues[0].ToString() + " " + selectedCardValues[1].ToString();
+        if (isCorrect == true)
+        {
+            Debug.Log($"{isCorrect} IsCorrect branch is accessed");
+            synchronizationSwitch = "isCorrect";
+            AdjustFoundAndNotFoundCards(firstCard, secondCard);
+            debugLog.text = ($"{notFoundCards[0]} {notFoundCards[1]} {notFoundCards[2]} {notFoundCards[3]} {notFoundCards[4]} {notFoundCards[5]} {notFoundCards[6]} {notFoundCards[7]} {notFoundCards[8]} {notFoundCards[9]} {notFoundCards[10]} {notFoundCards[11]} {notFoundCards[12]} {notFoundCards[13]} {notFoundCards[14]} {notFoundCards[15]} ");
+            RequestSerialization();
+            IntractableCards();
+            ResetSelectedCards();
+            PlayersTurnsTopic.ScoreGoesUp();
+        }
+    }
+
+    public void NextPlayer()
+    {
+        Networking.SetOwner(Networking.LocalPlayer,gameObject);
+        nextButton.SetActive(false);
+        PlayersTurnsTopic.RotateTurn();
+        ResetSelectedCards();
+        IntractableCards();
+        synchronizationSwitch = "goingToTheNextPlayer";
+        RequestSerialization();
     }
     public void RevealSelectedCard(int selectedCard)
     {
@@ -333,51 +342,14 @@ public class CardPlacement : UdonSharpBehaviour
                 }
             }
         }
+        if (!isCorrect)
+        {
+            nextButton.SetActive(true);
+        }
     }
     public void NextButtonAppears()
     {
         nextButton.SetActive(true);
-    }
-    public void NextPlayer()
-    {
-        Networking.SetOwner(Networking.LocalPlayer,gameObject);
-        IntractableCards();
-        PlayersTurnsTopic.RotateTurn();
-        synchronizationSwitch = "goingToTheNextPlayer";
-        RequestSerialization();
-        //Do I need to change ownership here?
-        //if (!isCorrect)
-            //HideIncorrectPair(selectedCardValues);
-        ResetSelectedCards();
-        nextButton.SetActive(false);
-
-    }
-    public void HideIncorrectPair(int[] incorrectPair)
-    {
-        foreach (int mistake in incorrectPair)
-        {
-            foreach (GameObject card in cardDeck)
-            {
-                if (card.name == mistake.ToString())
-                {
-                    GameObject cardText = card.transform.GetChild(0).gameObject;
-                    cardText.SetActive(false);
-                }
-            }
-        }
-    }
-    public void DisableCorrectPair(int[] correctPair)
-    {
-        foreach (int cardValue in correctPair)
-        {
-            foreach (GameObject card in cardDeck)
-            {
-                if (card.name == cardValue.ToString())
-                {
-                    card.GetComponent<Button>().interactable = false;
-                }
-            }
-        }
     }
 
     public void AdjustFoundAndNotFoundCards(int firstValue, int secondValue)
@@ -388,9 +360,9 @@ public class CardPlacement : UdonSharpBehaviour
             {
                 notFoundCards[i] = -1;
             }
-            foundCards[firstValue] = firstValue;
-            foundCards[secondValue] = secondValue;
         }
+        foundCards[firstValue] = firstValue;
+        foundCards[secondValue] = secondValue;
     }
 
     public void IntractableCards()
@@ -416,7 +388,43 @@ public class CardPlacement : UdonSharpBehaviour
                 }
             }
         }
+        foreach (int foundCardValue in foundCards)
+        {
+            foreach (GameObject card in cardDeck)
+            {
+                if (card.name == foundCardValue.ToString())
+                {
+                    GameObject cardText = card.transform.GetChild(0).gameObject;
+                    cardText.SetActive(true);
+                }
+            }
+        }
     }
+
+    public void ResetAndClearBoard()
+    {
+        foreach (GameObject card in cardDeck)
+        {
+            card.GetComponent<Button>().interactable = true;
+            GameObject cardText = card.transform.GetChild(0).gameObject;
+            cardText.SetActive(false);
+            card.SetActive(false);
+        }
+    }
+    public void Reset()
+    {
+        Networking.SetOwner(Networking.LocalPlayer,gameObject);
+        SetFoundAndNotFoundCards();
+        ResetAndClearBoard();
+        TurnOnMenuBoard(true, false);
+
+        synchronizationSwitch = "clearingAndResetting";
+        RequestSerialization();
+        
+        PlayersTurnsTopic.PlayersAndScoresReset();
+
+    }
+
     public override void OnDeserialization()
     {
         //debugLog.text = "case Deserialization switch is working!";
@@ -435,13 +443,23 @@ public class CardPlacement : UdonSharpBehaviour
             break;
 
         case "goingToTheNextPlayer":
-            debugLog.text = "Deserialization switch is working!";
+            //debugLog.text = "Deserialization switch is working!";
             IntractableCards();
             ResetSelectedCards();
+            nextButton.SetActive(false);
             break;
 
-        case "justTesting":
-            debugLog.text = "case Deserialization switch is working!";
+        case "isCorrect":
+            IntractableCards();
+            //debugLog.text = "case Deserialization switch is working!";
+            break;
+
+        case "clearingAndResetting":
+            SetFoundAndNotFoundCards();
+            ResetAndClearBoard();
+            TurnOnMenuBoard(true, false);
+            PlayersTurnsTopic.PlayersAndScoresReset();
+            //debugLog.text = "case Deserialization switch is working!";
             break;
         
         default:
@@ -456,7 +474,7 @@ public class CardPlacement : UdonSharpBehaviour
     {
         //Right in if statement here, so only one player can access; And cannot steal ownership
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId && canFlip == true)
         {
             SelectCards(0);
         }
@@ -465,7 +483,7 @@ public class CardPlacement : UdonSharpBehaviour
     public void TellMeYourName1()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId && canFlip == true)
         {
             SelectCards(1);
         }
@@ -475,7 +493,7 @@ public class CardPlacement : UdonSharpBehaviour
     public void TellMeYourName2()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId && canFlip == true)
         {
             SelectCards(2);
         }
@@ -485,7 +503,7 @@ public class CardPlacement : UdonSharpBehaviour
     public void TellMeYourName3()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId && canFlip == true)
         {
             SelectCards(3);
         }
@@ -495,14 +513,17 @@ public class CardPlacement : UdonSharpBehaviour
     public void TellMeYourName4()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        SelectCards(4);
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId && canFlip == true)
+        {
+            SelectCards(4);
+        }
         Debug.Log("This is button 4");
     }    
     
     public void TellMeYourName5()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId && canFlip == true)
         {
             SelectCards(5);
         }
@@ -512,7 +533,7 @@ public class CardPlacement : UdonSharpBehaviour
     public void TellMeYourName6()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId && canFlip == true)
         {
             SelectCards(6);
         }
@@ -522,7 +543,7 @@ public class CardPlacement : UdonSharpBehaviour
     public void TellMeYourName7()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId && canFlip == true)
         {
             SelectCards(7);
         }
@@ -532,7 +553,7 @@ public class CardPlacement : UdonSharpBehaviour
     public void TellMeYourName8()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId && canFlip == true)
         {
             SelectCards(8);
         }
@@ -542,7 +563,7 @@ public class CardPlacement : UdonSharpBehaviour
     public void TellMeYourName9()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId && canFlip == true)
         {
             SelectCards(9);
         }
@@ -552,7 +573,7 @@ public class CardPlacement : UdonSharpBehaviour
     public void TellMeYourName10()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId && canFlip == true)
         {
             SelectCards(10);
         }
@@ -562,7 +583,7 @@ public class CardPlacement : UdonSharpBehaviour
     public void TellMeYourName11()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId && canFlip == true)
         {
             SelectCards(11);
         }
@@ -572,7 +593,7 @@ public class CardPlacement : UdonSharpBehaviour
     public void TellMeYourName12()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId && canFlip == true)
         {
             SelectCards(12);
         }
@@ -582,7 +603,7 @@ public class CardPlacement : UdonSharpBehaviour
     public void TellMeYourName13()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId && canFlip == true)
         {
             SelectCards(13);
         }
@@ -592,7 +613,7 @@ public class CardPlacement : UdonSharpBehaviour
     public void TellMeYourName14()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId && canFlip == true)
         {
             SelectCards(14);
         }
@@ -602,7 +623,7 @@ public class CardPlacement : UdonSharpBehaviour
     public void TellMeYourName15()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId)
+        if (Networking.LocalPlayer.playerId == PlayersTurnsTopic.currentPlayerId && canFlip == true)
         {
             SelectCards(15);
         }
